@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Data (Library Reports) Visualization</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="css/plugins/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="js/d3.js"></script>
+        <script type="text/javascript" src="js/crossfilter.js"></script>
+        <script type="text/javascript" src="js/dc.js"></script>
+        <script type="text/javascript"  src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script type='text/javascript' src='https://www.google.com/jsapi'></script>        
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script src="http://www.w3schools.com/lib/w3data.js"></script>
+		<script type="text/javascript" src='https://www.google.com/jsapi?autoload={"modules":[{"name":"visualization","version":"1","packages":["corechart","controls","table"]}]}'></script>
+		
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/dc.css">
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
+        <style>
+        	#distribution_pie{
+        		width: 1800px;
+        	}
+        	#piddistribution{
+        		width: 1800px;
+        	}
+        	#slotpid{
+        		width: 1800px;
+        	}
+        	#viz_data{
+        		width: 1800px;
+        	}
+        </style>
+</head>
+
+<body>
+
+<div id="wrapper">
+		<div w3-include-html="navigation_bar.html"></div>
+        
+	<div id="page-wrapper">
+
+		<div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Night Owl from Statistics &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onclick="myFunction()" class="btn btn-success" role="button">Print this page</button>
+ 				</h1>
+        	</div>
+            <!-- /.col-lg-12 -->
+        </div>
+        
+        <!-- Left panel starts -->			
+		<div class="col-lg-12">
+			<div class="panel panel-default" id="distribution_pie">
+ 				<!-- Panel-heading -->
+     			<div class="panel-heading">
+         			Financial Year & Semester Distribution
+				</div>
+     			<!-- /.Panel-heading -->
+                <!-- Panel-body -->
+                <div class="panel-body", style = "height:100%; width:100%">
+					<div class="flot-chart">
+						<div class="col-md-6" style = "height:500px;" id="year_pie_chart"><!-- Pie Chart will be drawn inside this DIV --></div>
+						<div class="col-md-6" style = "height:500px;" id="sem_pie_chart"><!-- Pie Chart will be drawn inside this DIV --></div>
+						<!--<div class="flot-chart-content"  style = "height:70%; width:60%" id="equipment-usage-month"></div>-->
+					</div>
+				</div>
+                <!-- /.Panel-body -->
+			</div>
+		</div>  
+		<!-- Left panel ends -->
+        
+        <!-- Left panel starts -->			
+		<div class="col-lg-12">
+			<div class="panel panel-default" id="piddistribution">
+ 				<!-- Panel-heading -->
+     			<div class="panel-heading">
+         			Patron Distribution
+				</div>
+     			<!-- /.Panel-heading -->
+                <!-- Panel-body -->
+                <div class="panel-body", style = "height:100%; width:100%">
+					<div class="flot-chart">
+						<div class="col-md-1" style = "height:500px;"></div>
+						<div class="col-md-10" style = "height:500px;" id="pid_bar_chart"></div>
+						<div class="col-md-1" style = "height:500px;"></div>
+					</div>
+				</div>
+                <!-- /.Panel-body -->
+			</div>
+		</div>  
+		<!-- Left panel ends -->
+		
+		<!-- Left panel starts -->			
+		<div class="col-lg-12">
+			<div class="panel panel-default" id="slotpid">
+ 				<!-- Panel-heading -->
+     			<div class="panel-heading">
+         			Patron-Slot Distribution
+				</div>
+     			<!-- /.Panel-heading -->
+                <!-- Panel-body -->
+                <div class="panel-body", style = "height:100%; width:100%">
+					<div class="flot-chart">
+						<div class="col-md-4" style = "height:500px;" id="pid_pie_chart"><!-- Pie Chart will be drawn inside this DIV --></div>
+						<div class="col-md-8" style = "height:500px;" id="pid_slot_bar_chart"></div>
+						<!--<div class="flot-chart-content"  style = "height:70%; width:60%" id="equipment-usage-month"></div>-->
+					</div>
+				</div>
+                <!-- /.Panel-body -->
+			</div>
+		</div>  
+		<!-- Left panel ends -->
+        
+        <!-- Left panel starts -->			
+		<div class="col-lg-12">
+			<div class="panel panel-default" id="viz_data">
+ 				<!-- Panel-heading -->
+     			<div class="panel-heading">
+         			Visualized Data
+				</div>
+     			<!-- /.Panel-heading -->
+                <!-- Panel-body -->
+                <div class="panel-body", style = "height:100%; width:100%">
+					<div class="flot-chart">
+						<div class="flot-chart-content" id="table_div"></div>
+					</div>
+				</div>
+                <!-- /.Panel-body -->
+			</div>
+		</div>  
+		<!-- Left panel ends -->
+        
+        
+        
+
+
+
+
+
+	</div>
+
+	<div id="footer">
+			<div class="container">
+      	  		<p class="muted credit">Developed By: Ketan Deopujari</a> </p>
+      		</div>
+    	</div>
+	</div>
+
+	<script>
+	setTimeout(function(){w3IncludeHTML(); }, 1000);
+	function myFunction() {
+        window.print();
+    }
+    
+    google.charts.load('current', {'packages':['corechart','table']});
+    
+	var selected_year;
+	var selected_sem;
+	var selected_pid;
+	
+	d3.csv("NightOwl.csv",function(data) {
+		
+		
+		data.forEach(function(d){
+			d.Month = +d.Month;
+			d.Year = +d.Year;
+			d.Pid = +d.Pid;
+			d.Slotid = +d.Slotid;
+			d.Count = +d.Count;
+		});
+		data = recode_financial_year(recode_semester(data));
+		var unique_fin_year = get_unique_fin_years(data);
+		var unique_sem = get_unique_sem(data);
+		
+		//console.log(data);
+		google.setOnLoadCallback(function() { drawYearpieChart(data, unique_fin_year) });
+		google.setOnLoadCallback(function() { drawSempieChart(data, unique_sem) });
+		google.setOnLoadCallback(function() { drawPidBarChart(data) });
+		google.setOnLoadCallback(function() { drawpidpieChart(data) });
+		google.setOnLoadCallback(function() { totalSlotDistribution(data) });
+		//console.log(data);
+		google.setOnLoadCallback(function() { drawTable(data) });
+		
+	});
+	
+	function get_unique_sem(data){
+		var uniquesem = [];	//Code for identifying distinct number of Semesters
+			for(var i = 0; i < data.length; i++){    
+    			if(uniquesem.indexOf(data[i].Semester) === -1){
+        			uniquesem.push(data[i].Semester);        
+    			}        
+			}
+		return uniquesem;
+	}
+	
+	function get_unique_pid(data){
+	
+		var uniquepid = [];	//Code for identifying distinct number of patrons
+			for(var i = 0; i < data.length; i++){    
+    			if(uniquepid.indexOf(data[i].Pid) === -1){
+        			uniquepid.push(data[i].Pid);        
+    			}        
+			}
+		return uniquepid;
+	}
+	
+	function get_unique_fin_years(data){
+		var uniqueyear = [];	//Code for identifying distinct number of years
+			for(var i = 0; i < data.length; i++){    
+    			if(uniqueyear.indexOf(data[i].financialYear) === -1){
+        			uniqueyear.push(data[i].financialYear);        
+    			}        
+			}
+		return uniqueyear;
+	}
+	
+	function get_unique_pids_year_sem(data, year, sem){
+	
+		var uniquepid = [];	//Code for identifying distinct number of courses
+			for(var i = 0; i < data.length; i++){    
+    			if(uniquepid.indexOf(data[i].Pid) === -1 && data[i].financialYear == year && data[i].Semester == sem){
+        			uniquepid.push(data[i].Pid);        
+    			}        
+			}
+		return uniquepid;
+	}
+	
+	function get_unique_slots(data){
+	
+		var uniqueslots = [];	//Code for identifying distinct number of slots
+			for(var i = 0; i < data.length; i++){    
+    			if(uniqueslots.indexOf(data[i].Slotid) === -1){
+        			uniqueslots.push(data[i].Slotid);        
+    			}        
+			}
+		return uniqueslots;
+	}
+	
+	function get_unique_slots_pid_year(data, pid, year){
+		
+			var uniqueslots = [];	//Code for identifying distinct number of slots
+			for(var i = 0; i < data.length; i++){    
+    			if(uniqueslots.indexOf(data[i].Slotid) === -1 && data[i].Pid == pid && data[i].financialYear == year){
+        			uniqueslots.push(data[i].Slotid);        
+    			}        
+			}
+		return uniqueslots;
+	}
+	
+	function recode_semester(data){
+		
+		for(var i = 0; i < data.length; i++){
+		
+			if( data[i].Month >= 1 && data[i].Month <= 5 ){
+				data[i].Semester = 'Spring';
+			}else if( data[i].Month >= 6 && data[i].Month <= 8 ){
+				data[i].Semester = 'Summer';
+			}else{
+				data[i].Semester = 'Fall';
+			}
+		}
+		return data;
+	}
+	
+	function recode_financial_year(data){
+	
+		for(var i = 0; i < data.length; i++){
+		
+			if( data[i].Month >= 7){
+				data[i].financialYear = data[i].Year + 1;
+			} else {
+				data[i].financialYear = data[i].Year;
+			}
+			data[i].financialYear = 'FY'+data[i].financialYear;
+		}
+		return data;
+	}
+	
+	function drawYearpieChart(data, years){
+	
+		var total_pie = [];
+		var pie_data = [];
+		var count = 0;
+		
+		for(var i = 0; i < years.length; i++){
+			if(count > 0){
+				count =0;
+			}
+			for(var j = 0; j < data.length; j++){
+				if(years[i] == data[j].financialYear){
+					count = count + data[j].Count;
+				}
+			}
+			total_pie.push(count);
+		}
+	
+		for(var k = 0; k < years.length; k++){
+			pie_data.push([years[k],total_pie[k]]);
+		}
+		
+		var draw_data = new google.visualization.DataTable();
+	
+		draw_data.addColumn('string', 'Year');
+        draw_data.addColumn('number', 'Distribution');
+		draw_data.addRows(pie_data);
+		
+		var options = {
+          title: 'Year Distribution',
+          //is3D: true
+        };
+		var chart = new google.visualization.PieChart(document.getElementById('year_pie_chart'));
+		
+		function selectYearHandler() {
+    		
+    		var selectedItem = chart.getSelection()[0];
+    	
+    		if (selectedItem) {
+      			var value = draw_data.getValue(selectedItem.row, 0);
+      			selected_year = value;
+      			if(selected_sem && selected_year){
+      				drawDyPidBarChart();
+      			}
+      			if(selected_pid && selected_year){
+      				drawSlotBarChart();
+      			}
+      			//alert('The user selected ' + selected_year);
+    		}
+  		}
+  		
+  		google.visualization.events.addListener(chart, 'select', selectYearHandler);
+		chart.draw(draw_data, options);
+	}
+	
+	function drawSempieChart(data, semesters){
+	
+		var total_pie = [];
+		var pie_data = [];
+		var count = 0;
+		
+		for(var i = 0; i < semesters.length; i++){
+			if(count > 0){
+				count =0;
+			}
+			for(var j = 0; j < data.length; j++){
+				if(semesters[i] == data[j].Semester){
+					count++;
+				}
+			}
+			total_pie.push(count);
+		}
+	
+		for(var k = 0; k < semesters.length; k++){
+			pie_data.push([semesters[k],total_pie[k]]);
+		}
+		
+		var draw_data = new google.visualization.DataTable();
+	
+		draw_data.addColumn('string', 'Semester');
+        draw_data.addColumn('number', 'Distribution');
+		draw_data.addRows(pie_data);
+
+		var options = {
+          title: 'Semester Distribution',
+          //is3D: true
+        };
+		var chart = new google.visualization.PieChart(document.getElementById('sem_pie_chart'));
+		
+		function selectSemHandler() {
+    		
+    		var selectedItem = chart.getSelection()[0];
+    	
+    		if (selectedItem) {
+      			var value = draw_data.getValue(selectedItem.row, 0);
+      			selected_sem = value;
+      			if(selected_sem && selected_year){
+      				drawDyPidBarChart();
+      			}
+      			//alert('The user selected ' + selected_semester);
+    		}
+  		}
+  		
+  		google.visualization.events.addListener(chart, 'select', selectSemHandler);
+		chart.draw(draw_data, options);
+	}
+	
+	function drawPidBarChart(data){
+			
+		data = recode_pid(data);
+		var unique_pids = get_unique_pid(data);
+		var plot_axis = [];
+		var final_data = [];
+		var sum =0;
+		
+		for(var j = 0; j < unique_pids.length; j++){
+			
+			if(sum != 0){
+				sum = 0;
+			}
+			for(var k = 0; k < data.length; k++){
+				if(unique_pids[j] == data[k].Pid){
+					sum = sum + data[k].Count;
+				}
+			}
+			plot_axis.push(sum);
+		}
+		
+		final_data.push({
+			y: plot_axis,
+			x: unique_pids,
+			//name: selected_year,
+			orientation: 'v',
+			marker: {
+				color: 'rgba(105,38,89,0.6)',
+				width: 0.5
+			},
+			type: 'bar'
+		});
+		
+		var pid_layout = {
+				title: 'Patron Distrubution',
+				barmode: 'stack',
+				xaxis: {
+    				title: 'PID',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Distribution',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+	
+		Plotly.newPlot('pid_bar_chart', final_data, pid_layout);
+		
+	}
+	
+	function drawDyPidBarChart(){
+	
+		d3.csv("NightOwl.csv",function(data) {
+		
+		
+		data.forEach(function(d){
+			d.Month = +d.Month;
+			d.Year = +d.Year;
+			d.Pid = +d.Pid;
+			d.Slotid = +d.Slotid;
+			d.Count = +d.Count;
+		});
+		data = recode_financial_year(recode_semester(data));
+		data = recode_pid(data);
+		var unique_pids = get_unique_pids_year_sem(data, selected_year, selected_sem);
+		var plot_axis = [];
+		var final_data = [];
+		var sum =0;
+		
+		for(var j = 0; j < unique_pids.length; j++){
+			
+			if(sum != 0){
+				sum = 0;
+			}
+			for(var k = 0; k < data.length; k++){
+				if(unique_pids[j] == data[k].Pid && data[k].financialYear == selected_year && data[k].Semester == selected_sem){
+					sum = sum + data[k].Count;
+				}
+			}
+			plot_axis.push(sum);
+		}
+		
+		final_data.push({
+			y: plot_axis,
+			x: unique_pids,
+			//name: selected_year,
+			orientation: 'v',
+			marker: {
+				color: 'rgba(105,38,89,0.6)',
+				width: 0.5
+			},
+			type: 'bar'
+		});
+		
+		var pid_layout = {
+				title: 'Patron Distrubution for '+selected_sem+' ' +selected_year,
+				barmode: 'stack',
+				xaxis: {
+    				title: 'PID',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Distribution',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+	
+		Plotly.newPlot('pid_bar_chart', final_data, pid_layout);
+		
+	});	
+	
+	}
+	
+	function drawpidpieChart(data){
+
+		//data = recode_slot(data);
+		var unique_pid = get_unique_pid(data);
+		
+		var total_pie = [];
+		var pie_data = [];
+		var count = 0;
+		
+		for(var i = 0; i < unique_pid.length; i++){
+			if(count > 0){
+				count =0;
+			}
+			for(var j = 0; j < data.length; j++){
+				if(unique_pid[i] == data[j].Pid){
+					count = count + data[j].Count;
+				}
+			}
+			total_pie.push(count);
+		}
+	
+		for(var k = 0; k < unique_pid.length; k++){
+			pie_data.push([unique_pid[k],total_pie[k]]);
+		}
+		//console.log(pie_data);
+		var draw_data = new google.visualization.DataTable();
+	
+		draw_data.addColumn('string', 'Pid');
+        draw_data.addColumn('number', 'Distribution');
+		draw_data.addRows(pie_data);
+		
+		var options = {
+          title: 'Patron Distribution',
+          pieHole: 0.4
+          //is3D: true
+        };
+		var chart = new google.visualization.PieChart(document.getElementById('pid_pie_chart'));
+		
+		function selectPidHandler() {
+    		
+    		var selectedItem = chart.getSelection()[0];
+    	
+    		if (selectedItem) {
+      			var value = draw_data.getValue(selectedItem.row, 0);
+      			selected_pid = value;
+      			if(selected_pid && selected_year){
+      				drawSlotBarChart();
+      			}
+      			//alert('The user selected ' + selected_pid);
+    		}
+  		}
+  		
+  		google.visualization.events.addListener(chart, 'select', selectPidHandler);
+		chart.draw(draw_data, options);
+	}
+	
+	function drawSlotBarChart(){
+		
+		d3.csv("NightOwl.csv",function(data) {
+		
+		data.forEach(function(d){
+			d.Month = +d.Month;
+			d.Year = +d.Year;
+			d.Pid = +d.Pid;
+			d.Slotid = +d.Slotid;
+			d.Count = +d.Count;
+		});
+		
+		data = recode_financial_year(recode_semester(data));
+		data = recode_pid(data);
+		data = recode_slot(data);
+		//console.log(data);
+		var unique_slots = get_unique_slots_pid_year(data, selected_pid, selected_year);
+		//console.log(unique_slots);
+		var plot_axis = [];
+		var final_data = [];
+		var sum =0;
+		
+		for(var j = 0; j < unique_slots.length; j++){
+			
+			if(sum != 0){
+				sum = 0;
+			}
+			for(var k = 0; k < data.length; k++){
+				if(unique_slots[j] == data[k].Slotid && selected_pid == data[k].Pid && selected_year == data[k].financialYear){
+					sum = sum + data[k].Count;
+				}
+			}
+			plot_axis.push(sum);
+		}
+		
+		final_data.push({
+			y: plot_axis,
+			x: unique_slots,
+			//name: selected_pid,
+			orientation: 'v',
+			marker: {
+				color: 'rgba(50, 112, 225, 0.8)',
+				width: 0.5
+			},
+			type: 'bar'
+		});
+		
+		var pid_year_layout = {
+				title: 'Slot Distrubution for '+ selected_pid + ' for year '+ selected_year,
+				barmode: 'stack',
+				xaxis: {
+    				title: 'Slot',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Distribution',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+	
+		Plotly.newPlot('pid_slot_bar_chart', final_data, pid_year_layout);
+		});
+	}
+	
+	function totalSlotDistribution(data){
+	
+		data = recode_slot(data);
+		//console.log(data);
+		var unique_slots = get_unique_slots(data);
+		//console.log(unique_slots);
+		var plot_axis = [];
+		var final_data = [];
+		var sum =0;
+		
+		for(var j = 0; j < unique_slots.length; j++){
+			
+			if(sum != 0){
+				sum = 0;
+			}
+			for(var k = 0; k < data.length; k++){
+				if(unique_slots[j] == data[k].Slotid){
+					sum = sum + data[k].Count;
+				}
+			}
+			plot_axis.push(sum);
+		}
+		
+		final_data.push({
+			y: plot_axis,
+			x: unique_slots,
+			//name: selected_pid,
+			orientation: 'v',
+			marker: {
+				color: 'rgba(50, 112, 225, 0.8)',
+				width: 0.5
+			},
+			type: 'bar'
+		});
+		
+		var pid_year_layout = {
+				title: 'Total Slot Distrubution',
+				barmode: 'stack',
+				xaxis: {
+    				title: 'Slot',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Distribution',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+	
+		Plotly.newPlot('pid_slot_bar_chart', final_data, pid_year_layout);
+	}
+	
+	
+	/*
+	function drawSlotLineChart(){
+	
+		d3.csv("NightOwl.csv",function(data) {
+		
+		data.forEach(function(d){
+			d.Slotid = +d.Slotid;
+			d.Count = +d.Count;
+		});	
+		
+		data = recode_slot(data);
+		var unique_slots = get_unique_slots(data, selected_year);
+		var plot_axis = [];
+		var final_data = [];
+		var sum =0;
+		
+		for(var j = 0; j < unique_slots.length; j++){
+			
+			if(sum != 0){
+				sum = 0;
+			}
+			for(var k = 0; k < data.length; k++){
+				if(unique_slots[j] == data[k].Slotid && selected_year == data[k].Year){
+					sum = sum + data[k].Count;
+				}
+			}
+			plot_axis.push(sum);
+		}
+		
+		final_data.push({
+			y: plot_axis,
+			x: unique_slots,
+			name: selected_year,
+			orientation: 'v',
+			marker: {
+				color: 'rgba(255,140,31,0.6)',
+				width: 0.5
+			},
+			type: 'scatter'
+		});
+		
+		var slot_layout = {
+				title: 'Slot Distrubution for '+ selected_year,
+				barmode: 'stack',
+				xaxis: {
+    				title: 'Slots',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Distribution',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+	
+		Plotly.newPlot('slot_line_chart', final_data, slot_layout);
+		});
+	}
+	*/
+	function recode_slot(data){
+	
+		var flag = -1;
+		var slot_values = [
+			{"slot": 15, "value": "10 PM to 11 PM"},
+			{"slot": 16, "value": "11 PM to 12 AM"},
+			{"slot": 17, "value": "12 AM to 1 AM"},
+			{"slot": 18, "value": "1 AM to 2 AM"}
+		];
+		
+		for(var i=0; i < data.length; i++){
+			
+			if(flag != -1){
+				flag = -1;
+			}
+			for(var j=0; j < slot_values.length; j++){
+				if(data[i].Slotid == slot_values[j].slot){
+					flag = j;
+				}
+			}
+			if(flag > -1){
+				data[i].Slotid = slot_values[flag].value;
+			}else{
+				data[i].Slotid = "Other";
+			}
+		}
+
+		return data;
+	}
+	
+	
+	
+	function recode_pid(data){
+		
+		var flag = -1;
+		var pid_values = [
+			{"pid": 1, "type": "General Area Users"},
+			{"pid": 2, "type": "Computer Usage"},
+			{"pid": 4, "type": "Group Study Room Users"},
+			{"pid": 5, "type": "Room 1200H Quiet Study Room"},
+			{"pid": 6, "type": "Col-Lab Users"}
+		];
+		
+		for(var i=0; i < data.length; i++){
+			
+			if(flag != -1){
+				flag = -1;
+			}
+			for(var j=0; j < pid_values.length; j++){
+				if(data[i].Pid == pid_values[j].pid){
+					flag = j;
+				}
+			}
+			if(flag > -1){
+				data[i].Pid = pid_values[flag].type;
+			}else{
+				data[i].Pid = "Other";
+			}
+		}
+
+		return data;
+	}
+	
+	function drawTable(data){
+		
+		//console.log(data);
+		//data = recode_pid(data);
+		//data = recode_slot(data);
+		var processed_data = [];
+		var temp = []
+		var table_data = new google.visualization.DataTable();
+
+		
+        table_data.addColumn('string', 'Patron');
+        table_data.addColumn('string', 'Semester');
+        table_data.addColumn('string', 'Year');
+		table_data.addColumn('string', 'Slot');
+		table_data.addColumn('number', 'Count');
+		
+		for(var i = 0; i < data.length; i++){
+			processed_data.push(data[i].Pid);
+			processed_data.push(data[i].Semester);
+			processed_data.push(data[i].financialYear);
+			processed_data.push(data[i].Slotid);
+			processed_data.push(data[i].Count);
+			temp.push(processed_data);
+			processed_data = [];
+		}
+		
+		//console.log(new_data);
+	
+		table_data.addRows(temp);
+		
+		var table = new google.visualization.Table(document.getElementById('table_div'));
+	
+        table.draw(table_data, {showRowNumber: false, page: 'enable',pageSize: 50,
+        pagingSymbols: {
+            prev: 'Previous',
+            next: 'Next'
+        }, pagingButtonsConfiguration: 'auto', width: '100%', height: '100%'});
+    }
+	
+	
+	
+	</script>
+	<!-- /#wrapper -->
+
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="js/plugins/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/sb-admin-2.js"></script>
+
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script>
+    $(document).ready(function() {
+        $('#dataTables-example').dataTable();
+    });
+
+    </script>
+</body>
+</html>

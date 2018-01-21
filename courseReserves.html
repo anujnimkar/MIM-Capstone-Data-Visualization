@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Data (Library Reports) Visualization</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="css/plugins/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="js/d3.js"></script>
+        <script type="text/javascript" src="js/crossfilter.js"></script>
+        <script type="text/javascript" src="js/dc.js"></script>
+        <script type="text/javascript"  src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script type='text/javascript' src='https://www.google.com/jsapi'></script>        
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		
+		
+		
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/dc.css">
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
+        <style>
+        #distribution_piechart{
+        	width: 1800px;
+        }
+        #course_reserves{
+        	width: 1800px;
+        }
+        #univ_dist{
+        	width: 1800px;
+        }
+         #viz_data{
+        	width: 1800px;
+        }
+        </style>
+        
+</head>
+
+<body>
+
+	<div id="wrapper">
+		<!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            
+            <!-- navbar-header -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="LibraryDashboard.html"> <b>Data(Library Reports) Visualization </b></a>
+            </div>
+            <!-- /.navbar-header -->        
+
+            <!-- nav-sidebar-header -->
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                       
+                        <li>
+                            <a class="active" href="LibraryDashboard.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        </li>
+
+                        <li>
+                            <a href="LibraryDashboard.html"><i class="fa fa-bar-chart-o fa-fw"></i> Library Circulation Desk<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="itemLoanUsage.html"><i class="fa fa-bar-chart-o fa-fw"></i> Total Loan Usage</a>
+                                </li>
+                                <li>
+                                    <a href="courseReserves.html"><i class="fa fa-bar-chart-o fa-fw"></i> Course Reserves</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                        	<a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Student Study Hall<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="NightOwl.html"><i class="fa fa-bar-chart-o fa-fw"></i>Night Owl</a>
+                                </li>
+                                <li>
+                                    <a href="NightOwlLib.html"><i class="fa fa-bar-chart-o fa-fw"></i>Night Owl LibAnalytics</a>
+                                </li>
+                            </ul>
+                    	</li>
+                        <li>
+                        	<a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Group Study Room<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="GroupStudyRoom.html"><i class="fa fa-bar-chart-o fa-fw"></i>Study Room</a>
+                                </li>
+                            </ul>
+                    	</li>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+        
+        
+    <div id="page-wrapper">
+	
+		<div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Course Reserves &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onclick="myFunction()" class="btn btn-success" role="button">Print this page</button>
+ 				</h1>
+        	</div>
+            <!-- /.col-lg-12 -->
+        </div>
+	
+		<!-- Left panel starts -->			
+		<div class="col-lg-12">
+			<div class="panel panel-default" id="distribution_piechart">
+ 				<!-- Panel-heading -->
+     			<div class="panel-heading">
+         			Semester-Year-University Distribution
+				</div>
+     			<!-- /.Panel-heading -->
+                <!-- Panel-body -->
+                <div class="panel-body", style = "height:100%; width:100%">
+					<div class="row">
+						<div class="col-md-4" style = "height:500px;" id="sem_pie_chart"><!-- Pie Chart will be drawn inside this DIV --></div>
+						<div class="col-md-4" style = "height:500px;" id="year_pie_chart"><!-- Pie Chart will be drawn inside this DIV --></div>
+						<div class="col-md-4" style = "height:500px;" id="univ_pie_chart"></div>
+						<!--<div class="flot-chart-content"  style = "height:70%; width:60%" id="equipment-usage-month"></div>-->
+					</div>
+				</div>
+                <!-- /.Panel-body -->
+			</div>
+		</div>  
+		<!-- Left panel ends -->
+	
+		<!-- Right panel starts -->	
+		<div class="col-lg-12">
+     		<div class="panel panel-default" id="course_reserves">
+     		<!-- Panel-heading -->
+         		<div class="panel-heading">
+             		Course Reserves
+         		</div>
+        	<!-- /. Panel-heading -->
+       	 	<!-- Panel-body -->
+         		<div class="panel-body">
+             		<div class="flot-chart" style = "height:100%; width:100%">
+             			<div class="row" style = "height:100%">
+             				<!-- <div class="flot-chart-content" style = "height:30%; width:40%" id="equippment-by-type-year"></div> -->
+             				<div class="col-md-1" style = "height:500px;"></div>
+                 			<div class="col-md-10" style = "height:500px;" id="course_bar_chart"></div>
+                 			<div class="col-md-1" style = "height:500px;"></div>
+                 		</div> 
+             		</div>
+         		</div>
+         		<!-- /.Panel-body -->
+     		</div>
+ 		</div> 
+        <!-- Right panel ends --> 
+	
+		<div class="col-lg-12">
+     		<div class="panel panel-default" id="univ_dist">
+     		<!-- Panel-heading -->
+         		<div class="panel-heading">
+             		University Distribution
+         		</div>
+        	<!-- /. Panel-heading -->
+       	 	<!-- Panel-body -->
+         		<div class="panel-body">
+             		<div class="flot-chart" style = "height:100%; width:100%">
+             			<div style = "height:100%">
+             				<div class="col-md-1" style = "height:500px;"></div>
+                 			<div class="col-md-10" style = "height:500px;" id="univ_line_chart"></div>
+                 			<div class="col-md-1" style = "height:500px;"></div>
+                 		</div> 
+             		</div>
+         		</div>
+         		<!-- /.Panel-body -->
+     		</div>
+ 		</div> 
+ 		<!-- Right panel ends --> 
+ 		
+ 		
+            <div class="col-lg-12">
+                    <div class="panel panel-default" id="viz_data">
+                    	<div class="panel-heading">
+                            Visualized Data
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                        	<div id="table_div"></div>
+                        </div>
+                </div>
+            </div>
+        
+	
+	</div>
+		
+		
+		
+		<div id="footer">
+			<div class="container">
+      	  		<p class="muted credit">Developed By: Ketan Deopujari</a> </p>
+      		</div>
+    	</div>
+	</div>
+	
+	<script>
+	function myFunction() {
+        window.print();
+    }
+    
+    google.charts.load('current', {'packages':['corechart','table']});
+    
+    
+    var selected_semester;
+    var selected_year;
+    var selected_univ;
+    
+    d3.csv("CourseReservesData.csv",function(data) {
+    
+		var unique_year = get_unique_years(data);
+		google.setOnLoadCallback(function() { drawYearpieChart(data, unique_year) });
+		
+		data.forEach(function(d){
+			d.Year = +d.Year;
+		});
+		
+		var unique_sem = get_unique_sem(data);
+		google.setOnLoadCallback(function() { drawSempieChart(data, unique_sem) });
+		
+		var unique_univ = get_unique_univ(data);
+		google.setOnLoadCallback(function() { drawUnivpieChart(data, unique_univ) });
+		google.setOnLoadCallback(function() { drawTopCourses(data) });
+		google.setOnLoadCallback(function() { drawTotalUnivDist(data, unique_univ) });
+		google.setOnLoadCallback(function() { drawTable(data) });
+
+	});
+	
+	function get_unique_sem(data){
+		var uniquesem = [];	//Code for identifying distinct number of Semesters
+			for(var i = 0; i < data.length; i++){    
+    			if(uniquesem.indexOf(data[i].Semester) === -1){
+        			uniquesem.push(data[i].Semester);        
+    			}        
+			}
+		return uniquesem;
+	}
+	
+	function get_unique_years(data){
+		var uniqueyear = [];	//Code for identifying distinct number of years
+			for(var i = 0; i < data.length; i++){    
+    			if(uniqueyear.indexOf(data[i].Year) === -1){
+        			uniqueyear.push(data[i].Year);        
+    			}        
+			}
+		return uniqueyear;
+	}
+	
+	function get_unique_univ(data){
+		var uniqueuniv = [];	//Code for identifying distinct number of universities
+			for(var i = 0; i < data.length; i++){    
+    			if(uniqueuniv.indexOf(data[i].University) === -1){
+        			uniqueuniv.push(data[i].University);        
+    			}        
+			}
+		return uniqueuniv;
+	}
+	
+	function get_unique_course(data, semester, year, university){
+		var uniquecourse = [];	//Code for identifying distinct number of courses
+			for(var i = 0; i < data.length; i++){    
+    			if(uniquecourse.indexOf(data[i].Course) === -1 && data[i].Semester == semester && data[i].Year == year && data[i].University == university){
+        			uniquecourse.push(data[i].Course);        
+    			}        
+			}
+		return uniquecourse;
+	}
+	
+	function get_course(data){
+		var uniquecourse = [];	//Code for identifying distinct number of courses
+			for(var i = 0; i < data.length; i++){    
+    			if(uniquecourse.indexOf(data[i].Course) === -1){
+        			uniquecourse.push(data[i].Course);        
+    			}        
+			}
+		return uniquecourse;
+	}
+	
+	function drawSempieChart(data, semesters){
+	
+		var total_pie = [];
+		var pie_data = [];
+		var count = 0;
+		
+		for(var i = 0; i < semesters.length; i++){
+			if(count > 0){
+				count =0;
+			}
+			for(var j = 0; j < data.length; j++){
+				if(semesters[i] == data[j].Semester){
+					count++;
+				}
+			}
+			total_pie.push(count);
+		}
+	
+		for(var k = 0; k < semesters.length; k++){
+			pie_data.push([semesters[k],total_pie[k]]);
+		}
+		
+		var draw_data = new google.visualization.DataTable();
+	
+		draw_data.addColumn('string', 'Semester');
+        draw_data.addColumn('number', 'Distribution');
+		draw_data.addRows(pie_data);
+
+		var options = {
+          title: 'Semester Distribution',
+          //is3D: true
+        };
+		var chart = new google.visualization.PieChart(document.getElementById('sem_pie_chart'));
+		
+		function selectSemHandler() {
+    		
+    		var selectedItem = chart.getSelection()[0];
+    	
+    		if (selectedItem) {
+      			var value = draw_data.getValue(selectedItem.row, 0);
+      			selected_semester = value;
+      			if(selected_semester && selected_year){
+      				drawUnivLineChart();
+      			}
+      			if(selected_semester && selected_univ && selected_year){
+      				drawCourseBarChart();
+      			}
+      			//alert('The user selected ' + selected_semester);
+    		}
+  		}
+  		
+  		google.visualization.events.addListener(chart, 'select', selectSemHandler);
+		chart.draw(draw_data, options);
+	}
+	
+	
+	function drawYearpieChart(data, years){
+	
+		var total_pie = [];
+		var pie_data = [];
+		var count = 0;
+		
+		for(var i = 0; i < years.length; i++){
+			if(count > 0){
+				count =0;
+			}
+			for(var j = 0; j < data.length; j++){
+				if(years[i] == data[j].Year){
+					count++;
+				}
+			}
+			total_pie.push(count);
+		}
+	
+		for(var k = 0; k < years.length; k++){
+			pie_data.push([years[k],total_pie[k]]);
+		}
+	
+		//console.log(pie_data);
+		
+		var draw_data = new google.visualization.DataTable();
+	
+		draw_data.addColumn('string', 'Year');
+        draw_data.addColumn('number', 'Distribution');
+		draw_data.addRows(pie_data);
+		
+		var options = {
+          title: 'Year Distribution',
+          //is3D: true
+        };
+		var chart = new google.visualization.PieChart(document.getElementById('year_pie_chart'));
+		
+		function selectYearHandler() {
+    		
+    		var selectedItem = chart.getSelection()[0];
+    	
+    		if (selectedItem) {
+      			var value = draw_data.getValue(selectedItem.row, 0);
+      			selected_year = value;
+      			if(selected_semester && selected_year){
+      				drawUnivLineChart();
+      			}
+      			if(selected_semester && selected_univ && selected_year){
+      				drawCourseBarChart();
+      			}
+      			//alert('The user selected ' + selected_year);
+    		}
+  		}
+  		
+  		google.visualization.events.addListener(chart, 'select', selectYearHandler);
+		chart.draw(draw_data, options);
+	}
+	
+	
+	function drawUnivpieChart(data, universities){
+	
+		var total_pie = [];
+		var pie_data = [];
+		var count = 0;
+		
+		for(var i = 0; i < universities.length; i++){
+			if(count > 0){
+				count =0;
+			}
+			for(var j = 0; j < data.length; j++){
+				if(universities[i] == data[j].University){
+					count++;
+				}
+			}
+			total_pie.push(count);
+		}
+	
+		for(var k = 0; k < universities.length; k++){
+			pie_data.push([universities[k],total_pie[k]]);
+		}
+		
+		var draw_data = new google.visualization.DataTable();
+	
+		draw_data.addColumn('string', 'University');
+        draw_data.addColumn('number', 'Distribution');
+		draw_data.addRows(pie_data);
+		
+		var options = {
+          title: 'University Distribution',
+          //is3D: true
+        };
+		var chart = new google.visualization.PieChart(document.getElementById('univ_pie_chart'));
+		
+		function selectYearHandler() {
+    		
+    		var selectedItem = chart.getSelection()[0];
+    	
+    		if (selectedItem) {
+      			var value = draw_data.getValue(selectedItem.row, 0);
+      			selected_univ = value;
+      			if(selected_semester && selected_univ && selected_year){
+      				drawCourseBarChart();
+      			}
+      			//alert('The user selected ' + selected_univ);
+    		}
+  		}
+  		
+  		google.visualization.events.addListener(chart, 'select', selectYearHandler);
+		chart.draw(draw_data, options);
+	}
+	
+	function drawUnivLineChart(){
+	
+		d3.csv("CourseReservesData.csv",function(data) {
+			
+			var unique_univs = [];
+			var counts = [];
+			var sum = 0;
+			var final_data = [];
+			
+			
+			for(var i = 0; i < data.length; i++){    
+    			if(unique_univs.indexOf(data[i].University) === -1 && selected_semester == data[i].Semester && selected_year == data[i].Year){
+        			unique_univs.push(data[i].University);        
+    			}        
+			}
+			
+			//console.log(unique_univs);
+			for(var k = 0; k < unique_univs.length; k++){
+			
+				if(sum != 0){
+					sum = 0;
+				}
+				for(var j = 0; j < data.length; j++){
+					if(unique_univs[k] == data[j].University){
+						sum++;
+					}
+				}
+				counts.push(sum);
+			}
+			
+			//console.log(counts);
+
+			final_data.push({
+				y: counts,
+				x: unique_univs,
+				//name: selected_univ,
+				orientation: 'v',
+				marker: {
+					color: 'rgba(255,140,31,0.6)',
+					width: 0.5
+				},
+				type: 'scatter'
+		});
+		
+		var univ_layout = {
+				title: 'University Distribution for '+ selected_semester+' '+selected_year,
+				xaxis: {
+    				title: 'Universities',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Distribution',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+			
+			Plotly.newPlot('univ_line_chart', final_data, univ_layout);
+			
+		
+		});
+	
+	}
+	
+	
+	function drawCourseBarChart(){
+	
+		d3.csv("CourseReservesData.csv",function(data) {
+			
+		for (var i = 0; i < data.length; i++){
+			data[i].Course = data[i].Course.slice(0,5);
+		}	
+			
+		var unique_courses = get_unique_course(data, selected_semester, selected_year, selected_univ);
+		var courseDetails = [];
+		var courses_to_view = [];
+		var x_axis = [];
+		var y_axis = [];
+		var final_data = [];
+		
+		courseDetails =	process_courses(data, unique_courses);
+		
+		courseDetails.sort (function(a, b){
+ 			return b.value - a.value
+		});
+		
+		if(courseDetails.length > 10){
+			courses_to_view = courseDetails.slice(0,10);
+		}else {
+			courses_to_view = courseDetails;
+		}
+		
+		
+		for(var i = 0; i < courses_to_view.length; i++){
+			
+			x_axis[i] = courses_to_view[i].courseName;
+			y_axis[i] = courses_to_view[i].value;
+		}
+		
+		final_data.push({
+			y: y_axis,
+			x: x_axis,
+			name: selected_univ,
+			orientation: 'v',
+			marker: {
+				color: 'rgba(105,38,89,0.6)',
+				width: 0.5
+			},
+			type: 'bar'
+		
+		});
+		
+		//console.log(final_data);
+		
+		var course_layout = {
+				title: 'Course Reserves for'+ selected_univ,
+				barmode: 'stack',
+				xaxis: {
+    				title: 'Top Courses',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Count',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+	
+		Plotly.newPlot('course_bar_chart', final_data, course_layout);
+		
+		});
+	}
+	
+	function drawTopCourses(data){
+	
+		for (var i = 0; i < data.length; i++){
+			data[i].Course = data[i].Course.slice(0,5);
+		}	
+			
+		var unique_courses = get_course(data);
+		var courseDetails = [];
+		var courses_to_view = [];
+		var x_axis = [];
+		var y_axis = [];
+		var final_data = [];
+		
+		courseDetails =	process_top_courses(data, unique_courses);
+		
+		courseDetails.sort (function(a, b){
+ 			return b.value - a.value
+		});
+		
+		if(courseDetails.length > 10){
+			courses_to_view = courseDetails.slice(0,10);
+		}else {
+			courses_to_view = courseDetails;
+		}
+		
+		
+		for(var i = 0; i < courses_to_view.length; i++){
+			
+			x_axis[i] = courses_to_view[i].courseName;
+			y_axis[i] = courses_to_view[i].value;
+		}
+		
+		final_data.push({
+			y: y_axis,
+			x: x_axis,
+			name: selected_univ,
+			orientation: 'v',
+			marker: {
+				color: 'rgba(105,38,89,0.6)',
+				width: 0.5
+			},
+			type: 'bar'
+		
+		});
+		
+		//console.log(final_data);
+		
+		var course_layout = {
+				title: 'Course Reserves Items Most Borrowed',
+				barmode: 'stack',
+				xaxis: {
+    				title: 'Courses',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Count',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+	
+		Plotly.newPlot('course_bar_chart', final_data, course_layout);
+	
+	
+	}
+	
+	
+	function process_top_courses(data, uniqueCourses){
+		
+		var count = 0;
+		var courseOccurances = [];
+		var course_details = [];
+	
+		for(var i = 0; i < uniqueCourses.length; i++){
+			
+			if(count != 0){
+				count =0;
+			}
+			for(var j = 0; j < data.length; j++){
+				if(uniqueCourses[i] === data[j].Course){
+					count = count + 1;
+				}
+			}
+			courseOccurances.push(count);
+		}
+		//console.log(uniqueCourses);
+		//console.log(courseOccurances);
+		
+		for(var i = 0; i < uniqueCourses.length; i++){
+			course_details.push({
+				courseName: uniqueCourses[i],
+				value: courseOccurances[i]
+			});
+		}
+		return course_details;
+	}
+	
+	
+	function process_courses(data, uniqueCourses){
+		
+		var count = 0;
+		var courseOccurances = [];
+		var course_details = [];
+	
+		for(var i = 0; i < uniqueCourses.length; i++){
+			
+			if(count != 0){
+				count =0;
+			}
+			for(var j = 0; j < data.length; j++){
+				if(uniqueCourses[i] === data[j].Course && data[j].Semester == selected_semester && data[j].Year == selected_year && data[j].University == selected_univ){
+					count = count + 1;
+				}
+			}
+			courseOccurances.push(count);
+		}
+		//console.log(uniqueCourses);
+		//console.log(courseOccurances);
+		
+		for(var i = 0; i < uniqueCourses.length; i++){
+			course_details.push({
+				courseName: uniqueCourses[i],
+				value: courseOccurances[i]
+			});
+		}
+		return course_details;
+	}
+	
+	function drawTable(data){
+		
+
+		var processed_data = [];
+		var temp = []
+		var table_data = new google.visualization.DataTable();
+
+		table_data.addColumn('string', 'University');
+        table_data.addColumn('string', 'Semester');
+        table_data.addColumn('number', 'Year');
+        table_data.addColumn('string', 'Course');
+	
+		for(var i = 0; i < data.length; i++){
+			processed_data.push(data[i].University);
+			processed_data.push(data[i].Semester);
+			processed_data.push(data[i].Year);
+			processed_data.push(data[i].Course);
+			temp.push(processed_data);
+			processed_data = [];
+		}
+
+		table_data.addRows(temp);
+
+		var table = new google.visualization.Table(document.getElementById('table_div'));
+		
+        table.draw(table_data, {showRowNumber: false, page: 'enable',pageSize: 30,
+        pagingSymbols: {
+            prev: 'Previous',
+            next: 'Next'
+        }, pagingButtonsConfiguration: 'auto', width: '100%', height: '100%'});
+    }
+	
+	
+	function drawTotalUnivDist(data, universities){
+	
+			var counts = [];
+			var sum = 0;
+			var final_data = [];
+			
+			//console.log(unique_univs);
+			for(var k = 0; k < universities.length; k++){
+			
+				if(sum != 0){
+					sum = 0;
+				}
+				for(var j = 0; j < data.length; j++){
+					if(universities[k] == data[j].University){
+						sum++;
+					}
+				}
+				counts.push(sum);
+			}
+			
+			//console.log(counts);
+
+			final_data.push({
+				y: counts,
+				x: universities,
+				//name: selected_univ,
+				orientation: 'v',
+				marker: {
+					color: 'rgba(255,140,31,0.6)',
+					width: 0.5
+				},
+				type: 'scatter'
+		});
+		
+		var univ_layout = {
+				title: 'Course Reserves Items Borrowed by Institutions',
+				xaxis: {
+    				title: 'Institutions',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Count',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+			
+			Plotly.newPlot('univ_line_chart', final_data, univ_layout);
+	
+	
+	}
+	
+	</script>
+	
+	<!-- /#wrapper -->
+
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="js/plugins/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/sb-admin-2.js"></script>
+
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script>
+    $(document).ready(function() {
+        $('#dataTables-example').dataTable();
+    });
+
+    </script>
+</body>
+</html>

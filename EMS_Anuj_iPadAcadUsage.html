@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content=""> 
+	
+    <title>Data (Library Reports) Visualization</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="css/plugins/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+		<script type="text/javascript" src="js/d3.js"></script>
+        <script type="text/javascript" src="js/crossfilter.js"></script>
+        <script type="text/javascript" src="js/dc.js"></script>
+        <script type="text/javascript"  src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script type='text/javascript' src='https://www.google.com/jsapi'></script>        
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script src="http://www.w3schools.com/lib/w3data.js"></script>
+			
+		
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/dc.css">
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
+</head>
+	
+<body>
+
+	<div id="wrapper">
+      
+     <div w3-include-html="navigation_bar.html"></div>
+	
+	<div id="page-wrapper">
+		<div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Technology Borrwed For Academic Use &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onclick="myFunction()" class="btn btn-success" role="button">Print this page</button>
+ 				</h1> 
+        	</div>
+            <!-- /.col-lg-12 -->
+        </div>
+		
+		
+		<!--Div that will hold the pie chart-->
+		<div id="pie_div" style="width:1000px;height:300px"> 
+			<div id = "SemDiv" style = "width:500px;height:300px;float:left;">
+				<center><h3>Semester</h3></center>
+				<div id="sem_pie_chart_div" style="width:400px; height:300px; float:left;margin-left:100px;"></div> 
+			</div>
+			<div id = "YearDiv" style = "width:500px;height:300px;float:left;">
+				<center><h3>Year</h3></center> 
+				<div id="year_pie_chart_div" style="width:400px; height:300px; float:left;margin-left:100px;"></div>   
+			</div> 
+		</div>   
+		  
+		<!-- Left panel starts -->			
+		<div class="col-lg-12">
+			<div class="panel panel-default">
+ 				<!-- Panel-heading -->
+     			
+     			<!-- /.Panel-heading -->
+                <!-- Panel-body -->
+                <div class="panel-body", style = "height:40%">
+					<div class="flot-chart">
+						<div class="flot-chart-content" style = "height:600px; width:900px" id="inst_bar_chart"><!-- Bar Chart will be drawn inside this DIV --></div>
+						<!--<div class="flot-chart-content"  style = "height:70%; width:60%" id="equipment-usage-month"></div>-->
+					</div>
+				</div>
+                <!-- /.Panel-body -->
+			</div>
+		</div>  
+		<!-- Left panel ends -->
+      	
+		
+		
+    <div id="footer" style = "width:300px;" >
+		<div class="container" style = "width:300px;" >
+        	<p class="muted credit" style="width:100px;height:50px;">Developed By: Anuj Nimkar</a> </p> 
+      	</div> 
+    </div>
+</div>
+
+
+
+
+<script>
+setTimeout(function(){w3IncludeHTML(); }, 1000);
+google.charts.load('current', {packages: ['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+  
+    function drawChart() {  
+       
+      var draw_data = new google.visualization.DataTable(); 
+	  var draw_data1 = new google.visualization.DataTable(); 
+		
+	  d3.csv("Equipment_Req.csv",function(data) {       
+				
+		data.forEach(function(d){    
+			
+			d.ItemTypeRequested = String(d.ItemTypeRequested); 
+			d.Year = +d.Year;
+			d.Institutions = String(d.Institutions);  
+			d.NoOfItems = +d.NoOfItems;
+			d.Semester = String(d.Semester);
+			d.UserType = String(d.UserType);   
+			
+		});
+		var total_pie = [];
+		var pie_data = [];
+		var count = 0;
+		var semesters = get_unique_semesters(data); 
+		var unique_years = get_unique_years(data);
+			
+		var total_pie1 = [];
+		var pie_data1 = [];
+		var count1 = 0;
+		
+		for(var i = 0; i < semesters.length; i++){
+			if(count > 0){
+			count =0;
+			}
+			for(var j = 0; j < data.length; j++){
+				if(semesters[i] == data[j].Semester){
+					count++;
+				
+				}
+			}
+			 
+			total_pie.push(count);
+			
+			}
+			for(var k = 0; k < semesters.length; k++){
+				pie_data.push([semesters[k],total_pie[k]]);
+			} 
+		
+	  draw_data.addColumn('string', 'Semester');
+      draw_data.addColumn('number', 'Distribution');
+      draw_data.addRows(pie_data);         
+	
+		//for years
+		for(i = 0; i < unique_years.length; i++){
+			if(count1 > 0){
+			count1 =0;
+			}
+			for(j = 0; j < data.length; j++){
+				if(unique_years[i] == data[j].Year){
+					count1++; 
+				
+				}
+			}
+				
+			total_pie1.push(count1);
+			 
+			} 
+			for(k = 0; k < unique_years.length; k++){
+				pie_data1.push([unique_years[k],total_pie1[k]]);
+			}  
+			
+		draw_data1.addColumn('string', 'Year');       
+		draw_data1.addColumn('number', 'Distribution');
+		draw_data1.addRows(pie_data1);  
+				
+	
+	  function get_unique_semesters(data){
+		var uniquesem = []; 
+			uniquesem.push('Spring');
+			uniquesem.push('Fall');
+			uniquesem.push('Summer'); 
+		return uniquesem;  
+	}
+			
+	
+		function get_unique_years(data){
+		var uniqueyear = [];	
+			uniqueyear.push('2014');
+			uniqueyear.push('2015');
+			uniqueyear.push('2016');
+			 
+		return uniqueyear;
+	}
+	  
+	  var chart = new google.visualization.PieChart(document.getElementById('sem_pie_chart_div'));
+      chart.draw(draw_data, null);
+	  //drawYearPie(); 
+	  
+	  var chart1 = new google.visualization.PieChart(document.getElementById('year_pie_chart_div'));
+      chart1.draw(draw_data1, null);
+		
+	  document.getElementById("sem_pie_chart_div","year_pie_chart_div").addEventListener("click", selectSemandYearHandler); 
+					
+	  function selectSemandYearHandler() {        
+		//console.log("Entered select sem handler");    
+	   
+		var selectedItem = chart.getSelection()[0];  
+	    //console.log("Selected item "+selectedItem); 
+		var selectedItem1 = chart1.getSelection()[0]; 
+
+		if (selectedItem && selectedItem1) {
+		  var value = draw_data.getValue(selectedItem.row, 0);
+		  var value1 = draw_data1.getValue(selectedItem1.row, 0); 
+		  
+		  selected_semester = value;
+		  selected_year = value1;
+		  
+		  console.log("Selected semester is "+selected_semester); 
+		  console.log("Selected year is "+selected_year); 
+				
+		  drawStackedChart(selected_semester,selected_year);       
+			
+		  /*if(selected_semester && selected_year){
+		  drawUnivLineChart();
+		  }
+		  if(selected_semester && selected_univ && selected_year){
+		  drawCourseBarChart();
+		  }*/
+		  //alert('The user selected ' + selected_semester);
+		}
+	  };    
+    })     
+}
+
+function drawStackedChart(semesterSelected,yearSelected){   
+	//google.charts.load('current', {'packages':['table']});
+    
+	d3.csv("Equipment_Req.csv",function(data) {      
+				
+		data.forEach(function(d){    
+			
+			d.ItemTypeRequested = String(d.ItemTypeRequested); 
+			d.Year = +d.Year;
+			d.Institutions = String(d.Institutions);  
+			d.NoOfItems = +d.NoOfItems; 
+			d.UserType = String(d.UserType);   
+ 		});
+		 			
+		var final_inst_bar_chart_data = []; 
+		
+		//var unique_years = get_unique_years(data);
+		
+		var unique_items = get_unique_items(data); 
+
+		final_inst_bar_chart_data.push(generate_inst_loan_bar(data,'iPad',semesterSelected,yearSelected));      
+				
+			  
+		var inst_layout = {
+				title: 'Academic Use by Insitution',
+				barmode: 'stack',
+				xaxis: {  
+    				title: 'Institution',    
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Number of iPads', 
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+	
+		Plotly.newPlot('inst_bar_chart', final_inst_bar_chart_data, inst_layout); 
+		
+	});
+	
+	function get_unique_items(data){
+		var uniqueitems = []; 
+		for(var i = 0; i < data.length; i++){    
+    			if(uniqueitems.indexOf(data[i].ItemTypeRequested) === -1){
+        			uniqueitems.push(data[i].ItemTypeRequested);         
+    			}   
+		}
+		return uniqueitems;  
+	} 
+	
+	function get_unique_usertype(data, item){
+		var uniqueusertype = [];	//Code for identifying distinct number of items
+			for(var i = 0; i < data.length; i++){    
+    			if(uniqueusertype.indexOf(data[i].UserType) === -1 && data[i].ItemTypeRequested == item){ 
+        			
+					uniqueusertype.push(data[i].UserType);         
+    			}        
+			} 	
+		
+		return uniqueusertype;  
+	} 
+		
+	function get_unique_inst(data, item){
+		var uniqueinst = [];	//Code for identifying distinct number of items
+			for(var i = 0; i < data.length; i++){    
+    			if(uniqueinst.indexOf(data[i].Institutions) === -1 && data[i].ItemTypeRequested == item){ 
+        			//console.log(data[i].Institutions); 
+					 
+					uniqueinst.push(data[i].Institutions);         
+    			}        
+			} 	
+		
+		return uniqueinst;  
+	} 
+	
+		function generate_inst_loan_bar(data, item, selectedSemester, selectedYear){ 
+		
+		//console.log("In generate_inst_loan_bar "+item);  
+		var unique_inst = get_unique_inst(data, item); 
+		//console.log("In generate item loan bar function "+unique_items);
+		//var total_loan_value_per_year = [];
+		 
+		var total_no_of_ipads = [];    
+		
+		//var loan = 0;
+		var no_of_ipads = 0; 
+			
+		for (var k = 0; k < unique_inst.length; k++){
+			
+			if(no_of_ipads != 0){
+				no_of_ipads = 0;   
+			}
+			for (var l = 0; l < data.length; l++){  
+				//console.log(data.length); 
+				//console.log("Inside for loop "+data[l].Institutions);    
+				if((data[l].ItemTypeRequested == 'iPad') && (unique_inst[k] == data[l].Institutions) && (data[l].NoOfItems > 1) && (data[l].Semester == selectedSemester) && (data[l].Year == selectedYear)){  
+					no_of_ipads = no_of_ipads + data[l].NoOfItems;     
+				}   
+			}    
+			total_no_of_ipads.push(no_of_ipads);     
+		}  
+			
+		//console.log(total_loan_value_per_year);
+			
+		return{
+			y: total_no_of_ipads,  
+			x: unique_inst,  
+			name: item,
+			orientation: 'v',
+			marker: {
+				width: 0.5
+			}, 
+			type: 'bar'
+		}; 
+	}
+  
+} 	
+</script> 
+    <!-- /#wrapper -->
+
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script> 
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="js/plugins/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/sb-admin-2.js"></script>
+
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script>
+   /* $(document).ready(function() {
+        $('#dataTables-example').dataTable();
+    });*/  
+	
+    </script>  
+ 
+</body>
+  		
+</html> 

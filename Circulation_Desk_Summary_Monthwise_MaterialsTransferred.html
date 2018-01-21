@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content=""> 
+
+    <title>Data (Library Reports) Visualization</title>
+	
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- DataTables CSS -->
+    <link href="css/plugins/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+		<script type="text/javascript" src="js/d3.js"></script>
+        <script type="text/javascript" src="js/crossfilter.js"></script>
+        <script type="text/javascript" src="js/dc.js"></script>
+        <script type="text/javascript"  src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script type='text/javascript' src='https://www.google.com/jsapi'></script>        
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script src="http://www.w3schools.com/lib/w3data.js"></script>
+
+			
+		
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/dc.css">
+        <link rel="stylesheet" type="text/css" href="css/styles.css">
+</head>
+	
+<body>
+
+	<div id="wrapper">
+      
+      <!-- Navigation -->
+       <div w3-include-html="navigation_bar.html"></div>
+	
+	<div id="page-wrapper">
+		<div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Items Transferred &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button onclick="myFunction()" class="btn btn-success" role="button">Print this page</button>
+ 				</h1>
+        	</div>
+            <!-- /.col-lg-12 -->
+        </div>
+         
+        <!-- Left panel starts -->			
+		<div class="col-lg-12">
+			<div class="panel panel-default">  
+ 				<!-- Panel-heading -->
+     			
+     			<!-- /.Panel-heading -->
+                <!-- Panel-body -->
+                <div class="panel-body", style = "height:40%">
+					<div class="flot-chart">
+						<div class="flot-chart-content" style = "height:600px; width:900px" id="circulation_desk_materialsTransferred_bar_chart"><!-- Bar Chart will be drawn inside this DIV --></div>
+						<!--<div class="flot-chart-content"  style = "height:70%; width:60%" id="equipment-usage-month"></div>-->
+					</div>
+				</div> 
+                <!-- /.Panel-body -->
+			</div>
+		</div>   
+		<!-- Left panel ends -->
+      	
+		
+    <div id="footer">
+		<div class="container">
+        	<p class="muted credit" style="width:100px;height:50px;">Developed By: Anuj Nimkar</a> </p> 
+      	</div>
+    </div>
+</div>
+
+
+
+
+<script>
+	setTimeout(function(){w3IncludeHTML(); }, 1000);
+	function myFunction() {
+        window.print();
+    }
+     
+    google.charts.load('current', {'packages':['table']});
+    
+	d3.csv("Circulation_Desk_Summary_data.csv",function(data) {       
+				
+		data.forEach(function(d){    
+			//d.ItemStatus = +d.ItemStatus;
+			//d.BorrowerCategory = +d.BorrowerCategory;
+			//d.TotalLoans = +d.TotalLoans;
+			  
+			d.Year = +d.Year;
+			d.Month = String(d.Month); 
+			d.Noofmaterialstransferred = +d.Noofmaterialstransferred; 	 
+		}); 
+			
+		/*for(var p = 0; p < data.length; i++){	
+			console.log("No of items"+data[p].NoOfItems); 
+			console.log("Year"+data[p].Year);
+			console.log("Institutions "+data[p].Institutions);   
+			console.log("Item type requested"+data[p].ItemTypeRequested);    
+		}*/ 		
+		//google.charts.setOnLoadCallback(drawTable(data));
+		//google.setOnLoadCallback(function() { drawTable(data) });
+				
+		var final_noOfMaterials_bar_chart_data = [];	
+		//var final_patron_bar_chart_data = [];
+		 
+		var unique_years = get_unique_years(data);
+		//var items_recoded_data = recode_items(data);
+		//var patron_recoded_data = recode_patrons(data);
+		//console.log("No of unique years"+unique_years);
+
+		for (var j = 0; j < unique_years.length; j++){
+			
+			//console.log("In the unique years for loop "+unique_years[j]);    
+			final_noOfMaterials_bar_chart_data.push(generate_noOfMaterials_loan_bar(data,unique_years[j]));  
+		} 
+		
+		/*for (var j = 0; j < unique_years.length; j++){
+			final_patron_bar_chart_data.push(generate_patron_loan_point(patron_recoded_data,unique_years[j]));
+		}*/ 
+		 	
+		var noOfMaterials_layout = {   
+				title: 'Items Transferred Each Month by Fiscal Year',
+				barmode: 'stack',
+				xaxis: {   
+    				title: 'Month',   
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				} 
+  					},
+ 				yaxis: {
+    				title: 'Number if Items',   
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};
+	
+	
+		/*var patrons_layout = {
+				title: 'Colored Line Chart Representing Total Loans for Patrons',
+				barmode: 'stack',
+				xaxis: {
+    				title: 'Patrons',
+    				titlefont: {
+      					family: 'Verdana',
+      					size: 16,
+      					color: '#458b74'
+   		 				}
+  					},
+ 				yaxis: {
+    				title: 'Total Loans',
+    				titlefont: {
+      				family: 'Verdana',
+      				size: 16,
+      				color: '#458b74'
+    				}
+  				}
+			};*/  
+			
+			
+		Plotly.newPlot('circulation_desk_materialsTransferred_bar_chart', final_noOfMaterials_bar_chart_data, noOfMaterials_layout); 
+		//Plotly.newPlot('patrons_line_chart', final_patron_bar_chart_data, patrons_layout);  
+		//console.log(data);
+	}); 
+			
+	function get_unique_years(data){  
+		var uniqueyear = [];	//Code for identifying distinct number of years
+			for(var i = 0; i < data.length; i++){    
+    			if(uniqueyear.indexOf(data[i].Year) === -1){
+        			uniqueyear.push(data[i].Year);        
+    			}        
+			}
+		return uniqueyear; 
+	}  
+	
+	function get_unique_month(data){
+		var uniquemonth = [];	//Code for identifying distinct number of items
+			for(var i = 0; i < data.length; i++){    
+    			if(uniquemonth.indexOf(data[i]) === -1){ 
+        			//console.log(data[i].Month);  
+					uniquemonth.push(data[i].Unique_Months);            
+    			}        
+			} 	
+		//uniqueitem.push("iPad");
+		//uniqueitem.push("Laptop");
+		console.log(uniquemonth); 
+		return uniquemonth;  
+	}   
+	
+	/*function get_unique_patrons(data, year){
+		var uniquepatron = [];	//Code for identifying distinct number of patrons
+			for(var i = 0; i < data.length; i++){    
+    			if(uniquepatron.indexOf(data[i].BorrowerCategory) === -1 && data[i].Year == year){
+        			uniquepatron.push(data[i].BorrowerCategory);        
+    			}        
+			}
+		return uniquepatron;
+	}*/ 
+	
+	/*function recode_items(data){
+	
+		var flag = -1;
+		var item_values = [
+			{"value": 1, "item": "Books"},
+			{"value": 3, "item": "Books"},
+			{"value": 21, "item": "Books"},
+			{"value": 22, "item": "Books"},
+			{"value": 23, "item": "Books"},
+			{"value": 24, "item": "Videos"},
+		
+		{"value": 31, "item": "Equipment Accessory"},
+			{"value": 36, "item": "iPad"},
+			{"value": 38, "item": "Recorder"},
+			{"value": 52, "item": "Course Reserves"},
+			{"value": 53, "item": "Laptop"},
+			{"value": 55, "item": "One Button Studio"}
+		];
+		
+		for(var i=0; i < data.length; i++){
+			
+			if(flag != -1){
+				flag = -1;
+			}
+			for(var j=0; j < item_values.length; j++){
+				if(data[i].ItemStatus == item_values[j].value){
+					flag = j;
+				}
+			}
+			if(flag > -1){
+				data[i].ItemStatus = item_values[flag].item;
+			}else{
+				data[i].ItemStatus = "Other";
+			}
+		}
+
+		return data;
+	}*/ 
+	
+	/*function recode_patrons(data){
+	
+		var flag = -1;
+		var patron_values = [
+			{"value": 11, "patron": "Faculty"},
+			{"value": 21, "patron": "Staff"},
+			{"value": 41, "patron": "Undergrad"},
+			{"value": 31, "patron": "Grad"}
+		];
+		
+		for(var i=0; i < data.length; i++){
+			
+			if(flag != -1){
+				flag = -1;
+			}
+			for(var j=0; j < patron_values.length; j++){
+				if(data[i].BorrowerCategory == patron_values[j].value){
+					flag = j;
+				}
+			}
+			if(flag > -1){
+				data[i].BorrowerCategory = patron_values[flag].patron;
+			}else{
+				data[i].BorrowerCategory = "Other";
+			}
+		}
+
+		return data;
+	}*/
+			
+	function generate_noOfMaterials_loan_bar(data, year){
+		 
+		var unique_month = get_unique_month(data, year); 
+		//console.log("In generate item loan bar function "+unique_items);
+		//var total_loan_value_per_year = [];
+		var total_noOfMaterials_per_year = [];   
+		
+		//var loan = 0;
+		var noOfMaterials = 0;    
+			
+		for (var k = 0; k < unique_month.length; k++){ 
+			
+			if(noOfMaterials != 0){
+				noOfMaterials = 0;    
+			}
+			for (var l = 0; l < data.length; l++){ 
+				//console.log(data.length); 
+				//console.log("Inside for loop "+data[l].Institutions);    
+				if(data[l].Year == year && (unique_month[k] == data[l].Month)){ 
+					noOfMaterials = noOfMaterials + data[l].Noofmaterialstransferred;    
+				}  
+			}   
+			total_noOfMaterials_per_year.push(noOfMaterials);      
+		}
+		
+		//console.log(total_loan_value_per_year);
+			
+		return{
+			y: total_noOfMaterials_per_year,
+			x: unique_month,   
+			name: year,
+			orientation: 'v',
+			marker: {
+				width: 0.5
+			},
+			type: 'bar'
+		};
+	}
+	
+	
+	/*function generate_patron_loan_point(data, year){
+	
+		var unique_patrons = get_unique_patrons(data, year);
+		//console.log(unique_items);
+		var total_loan_value_per_year = [];
+		var loan = 0;
+		
+		for (var k = 0; k < unique_patrons.length; k++){
+			
+			if(loan != 0){
+				loan = 0;
+			}
+			for (var l = 0; l < data.length; l++){
+				if(data[l].Year == year && unique_patrons[k] == data[l].BorrowerCategory){
+					loan = loan + data[l].TotalLoans;
+				}
+			}
+			total_loan_value_per_year.push(loan);
+		}
+		
+		
+		
+		return{
+			y: total_loan_value_per_year,
+			x: unique_patrons,
+			name: year,
+			orientation: 'v',
+			marker: {
+				width: 0.5
+			},
+			type: 'scatter'
+		};
+	}*/ 
+	
+	/*function drawTable(data){
+		
+		//var visualization = new google.visualization.Table(container);
+		var table_data = new google.visualization.DataTable();
+		//console.log(data);
+		table_data.addColumn('string', 'Patron');
+        table_data.addColumn('string', 'Item');
+        table_data.addColumn('number', 'Total Loans');
+        table_data.addColumn('number', 'Year');
+	
+		var new_data = data.map(function(obj) {
+  				return Object.keys(obj).sort().map(function(key) { 
+    			return obj[key];
+  			});
+		});
+	
+		table_data.addRows(new_data);
+		
+		var table = new google.visualization.Table(document.getElementById('table_div'));
+
+        table.draw(table_data, {showRowNumber: false, page: 'enable',pageSize: 50,
+        pagingSymbols: {
+            prev: 'Previous',
+            next: 'Next'
+        }, pagingButtonsConfiguration: 'auto', width: '100%', height: '100%'});
+    } */ 
+ 
+	
+</script>
+    <!-- /#wrapper -->
+
+    <!-- jQuery Version 1.11.0 -->
+    <script src="js/jquery-1.11.0.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="js/plugins/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/sb-admin-2.js"></script>
+
+    <!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    <script>
+    $(document).ready(function() {
+        $('#dataTables-example').dataTable();
+    }); 
+		
+    </script>  
+
+</body> 
+  		
+</html>  
